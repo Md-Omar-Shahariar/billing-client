@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TableRow from "./TableRow";
 import { useForm } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -14,6 +14,14 @@ const Table = () => {
   } = useForm();
   const [tasks, setTasks] = useState([]);
   const [page, setPage] = useState(0);
+  useEffect(() => {
+    fetch("http://localhost:5000/billing-list")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setTasks(data);
+      });
+  }, []);
 
   let errorMessage;
   let arr = [];
@@ -25,9 +33,16 @@ const Table = () => {
   let pageCount = 1;
 
   if (tasks.length > 10) {
+    console.log(tasks);
+    console.log(tasks.length);
     const count = tasks.length / 10;
+
     console.log(count);
-    pageCount = count + 1;
+    if (count % 1 === 0) {
+      pageCount = count;
+    } else {
+      pageCount = count + 1;
+    }
   }
 
   //   pageCount = Math.ceil(tasks.length / 10) > 1 || 1;
@@ -38,6 +53,15 @@ const Table = () => {
   const onSubmit = async (data) => {
     const obj = {
       useremail: user.email,
+      _id: "Generating",
+      name: data.name,
+      email: data.email,
+      phone: Number(data.phone),
+      amount: Number(data.amount),
+    };
+    const bill = {
+      useremail: user.email,
+
       name: data.name,
       email: data.email,
       phone: Number(data.phone),
@@ -45,8 +69,28 @@ const Table = () => {
     };
     const newTasks = [...tasks, obj];
     setTasks(newTasks);
+
+    fetch("http://localhost:5000/billing-list", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bill),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.acknowledged === true) {
+          fetch("http://localhost:5000/billing-list")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              setTasks(data);
+            });
+        }
+      });
+
     console.log(obj);
-    console.log(tasks);
+    console.log(newTasks);
   };
   return (
     <div className="container">
@@ -264,7 +308,7 @@ const Table = () => {
                     <input
                       className="btn btn-secondary"
                       type="submit"
-                      value="login"
+                      value="Add"
                     />
                   </form>
                 </div>
