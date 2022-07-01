@@ -6,6 +6,8 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import Table from "./components/Table";
 import RequireAuth from "./Shared/RequireAuth";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   return (
@@ -23,6 +25,7 @@ function App() {
           }
         ></Route>
       </Routes>
+      <ToastContainer></ToastContainer>
     </div>
   );
 }

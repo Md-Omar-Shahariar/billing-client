@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-const TableRow = ({ task }) => {
+const TableRow = ({ task, setId, id }) => {
+  //   console.log(id);
+  let obj;
   const [name, setName] = useState("");
   const {
     register,
@@ -10,16 +12,43 @@ const TableRow = ({ task }) => {
   } = useForm();
   let errorMessage;
 
+  const [bool, setBool] = useState(false);
+  //   if (bool === true) {
+  //     console.log(id);
+  //     fetch(`http://localhost:5000/update-billing/${id}}`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(obj),
+  //     });
+  //   }
+
   const onSubmit = async (data) => {
-    // const obj = {
-    //   _id: "Generating",
-    //   name: data.name,
-    //   email: data.email,
-    //   phone: Number(data.phone),
-    //   amount: Number(data.amount),
-    // };
+    obj = {
+      name: data.name,
+      email: data.email,
+      phone: Number(data.phone),
+      amount: Number(data.amount),
+      id: data.id,
+    };
+    console.log(obj.id);
+    // setId(data.id);
+    // setTimeout(setBool(true), 5000);
+    // console.log(bool);
+    // console.log(id);
+
     // console.log(obj);
   };
+  //   if (id) {
+  //     fetch(`http://localhost:5000/update-billing/${id}}`, {
+  //       method: "PUT",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(obj),
+  //     });
+  //   }
   return (
     <tr style={{ height: "60px" }} className="">
       <td scope="row">{task._id}</td>
@@ -75,6 +104,27 @@ const TableRow = ({ task }) => {
                       type="text"
                       placeholder="Full Name"
                       className=""
+                    />
+
+                    <label className="label">
+                      {errors.name?.type === "required" && (
+                        <span className="text-danger">
+                          {errors.name.message}
+                        </span>
+                      )}
+                    </label>
+                  </div>
+                  <div className="form-control d-flex justify-content-end mb-3">
+                    <label className="pe-3 fw-bold">
+                      <span className="label-text">ID: </span>
+                    </label>
+                    <input
+                      {...register("id")}
+                      id="id"
+                      type="text"
+                      placeholder="Id"
+                      value={task._id}
+                      disabled
                     />
 
                     <label className="label">

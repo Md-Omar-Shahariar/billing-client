@@ -3,8 +3,10 @@ import TableRow from "./TableRow";
 import { useForm } from "react-hook-form";
 import { useAuthState } from "react-firebase-hooks/auth";
 import auth from "../firebase.init";
+import { toast } from "react-toastify";
 
 const Table = () => {
+  const [id, setId] = useState("");
   const [user] = useAuthState(auth);
   const {
     register,
@@ -67,10 +69,12 @@ const Table = () => {
       phone: Number(data.phone),
       amount: Number(data.amount),
     };
+    const oldTask = [...tasks];
     const newTasks = [...tasks, obj];
+
     setTasks(newTasks);
 
-    fetch("http://localhost:5000/billing-list", {
+    fetch("http://localhost:5000/add-billing", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -80,12 +84,16 @@ const Table = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.acknowledged === true) {
+          toast.success("Success Fully Added");
           fetch("http://localhost:5000/billing-list")
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
               setTasks(data);
             });
+        } else {
+          toast.error("Failed to Add");
+          setTasks(oldTask);
         }
       });
 
@@ -127,7 +135,7 @@ const Table = () => {
             </thead>
             <tbody>
               {arr.map((task) => (
-                <TableRow task={task}></TableRow>
+                <TableRow task={task} setId={setId} id={id}></TableRow>
               ))}
             </tbody>
             <div></div>
